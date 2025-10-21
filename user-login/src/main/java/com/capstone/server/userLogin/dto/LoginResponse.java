@@ -1,8 +1,8 @@
-package com.capstone.server.userRegister.dto;
+package com.capstone.server.userLogin.dto;
 
 import java.util.Date;
 
-public record RegisterResponse(
+public record LoginResponse(
         String id,
         String email,
         String username,
