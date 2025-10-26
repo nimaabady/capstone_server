@@ -19,17 +19,14 @@ public interface LoginRepository extends JpaRepository<Login, Long> {
     @Modifying
     @Transactional
     @Query(value = """
-        INSERT INTO users (email, username, password, status, created_at)
-        VALUES (:email, :username, :password, :status, NOW())
-        """, nativeQuery = true)
-
+    INSERT INTO users (email, username, password, status, created_at)
+    VALUES (:email, :username, :password, :status, NOW())
+    """, nativeQuery = true)
     public LoginResponse register(
-            @Param("id") String id,
             @Param("email") String email,
             @Param("username") String username,
             @Param("password") String password,
-            @Param("status") String status,
-            @Param("created_at") Date created_at
+            @Param("status") String status
     );
 
     @Query(value = """
@@ -39,7 +36,6 @@ public interface LoginRepository extends JpaRepository<Login, Long> {
         """, nativeQuery = true)
     public LoginResponse login(
             @Param("email") String email,
-            @Param("username") String username,
             @Param("password") String password
     );
 }

@@ -28,8 +28,7 @@ public class LoginServiceImpl implements LoginService {
                 .email(request.email())
                 .username(request.username())
                 .password(request.password())
-                .status(request.status())
-                .createdAt(new Date())
+                .status("Active")
                 .build();
 
         Login saved = regRepo.save(user);

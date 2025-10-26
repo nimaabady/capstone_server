@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/register")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -26,7 +26,7 @@ public class LoginController {
         return new ResponseEntity<>(this.regService.registerUser(LoginRequest), HttpStatus.OK);
     }
     
-    @GetMapping("/loginUser")
+    @PostMapping("/loginUser")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest LoginRequest){
         return new ResponseEntity<>(this.regService.loginUser(LoginRequest), HttpStatus.OK);
     }
