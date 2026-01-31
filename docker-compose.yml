@@ -1,0 +1,69 @@
+services:
+  postgres-users:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    networks:
+      - spring
+
+  postgres-messages:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: messages
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - spring
+
+  user-login:
+    build: ./user-login
+    container_name: users-login
+    environment:
+      SPRING_PROFILES_ACTIVE: users
+    ports:
+      - "8090:8090"
+    depends_on:
+      - postgres-users
+    networks:
+      - spring
+
+  messaging:
+    build: ./messaging
+    container_name: messaging
+    environment:
+      SPRING_PROFILES_ACTIVE: messaging
+
+    ports:
+      - "8091:8091"
+    depends_on:
+      - postgres-messages
+    networks:
+      - spring
+
+  pgadmin:
+    image: dpage/pgadmin4:9.9
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@domain.ca
+      PGADMIN_DEFAULT_PASSWORD: password
+    networks:
+      - spring
+
+#  rabbitmq:
+#    image: 'rabbitmq:latest'
+#    environment:
+#      - 'RABBITMQ_DEFAULT_PASS=secret'
+#      - 'RABBITMQ_DEFAULT_USER=myuser'
+#    ports:
+#      - '5672'
+
+networks:
+  spring:
+    driver: bridge
