@@ -21,6 +21,17 @@ services:
     networks:
       - spring
 
+  postgres-friends:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: friends
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    networks:
+      - spring
+
   user-login:
     build: ./user-login
     container_name: users-login
@@ -43,6 +54,18 @@ services:
       - "8091:8091"
     depends_on:
       - postgres-messages
+    networks:
+      - spring
+
+  friends:
+    build: ./friends
+    container_name: friends
+    environment:
+      SPRING_PROFILES_ACTIVE: friends
+    ports:
+      - "8092:8092"
+    depends_on:
+      - postgres-friends
     networks:
       - spring
 
