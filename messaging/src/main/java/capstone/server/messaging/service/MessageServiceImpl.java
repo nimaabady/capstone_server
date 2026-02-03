@@ -8,6 +8,7 @@ import capstone.server.messaging.model.MessageStatus;
 import capstone.server.messaging.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -22,14 +23,14 @@ public class MessageServiceImpl implements MessageService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
-    public void sendMessage(Principal principal, IncomingMessage dto) {
+    public void sendMessage(Principal principal, IncomingMessage incoming) {
 
         UUID senderId = UUID.fromString(principal.getName());
 
         Message entity = Message.builder()
                 .sender(senderId)
-                .receiver(String.valueOf(dto.receiver()))
-                .content(UUID.fromString(dto.content()))
+                .receiver(UUID.fromString(String.valueOf(incoming.receiver())))
+                .content(String.valueOf(incoming.content()))
                 .status(MessageStatus.SENT)
                 .createdAt(Instant.now())
                 .build();
@@ -37,11 +38,11 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(entity);
 
         messagingTemplate.convertAndSendToUser(
-                dto.receiver().toString(),
+                incoming.receiver().toString(),
                 "/queue/messages",
                 new OutgoingMessage(
                         senderId,
-                        dto.content(),
+                        incoming.content(),
                         entity.getCreatedAt()
                 )
         );
@@ -50,17 +51,22 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void acknowledge(Principal principal, MessageAck ack) {
 
-        Message message = messageRepository.findById(ack.messageId())
-                .orElseThrow();
-
         UUID receiverId = UUID.fromString(principal.getName());
 
+        Message message = messageRepository.findById(ack.messageId())
+                .orElseThrow(() -> new IllegalArgumentException("Message not found"));
+
         if (!message.getReceiver().equals(receiverId)) {
-            throw new SecurityException("Invalid ACK");
+            throw new AccessDeniedException("Invalid ACK");
+        }
+
+        if (message.getStatus() == MessageStatus.DELIVERED) {
+            return;
         }
 
         message.setStatus(MessageStatus.DELIVERED);
         messageRepository.save(message);
     }
+
 }
 

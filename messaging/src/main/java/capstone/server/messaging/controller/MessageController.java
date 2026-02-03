@@ -14,7 +14,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class MessageController {
 
-    MessageService messageService;
+    private final MessageService messageService;
 
     @MessageMapping("/message.send")
     public void sendMessage(IncomingMessage dto, Principal principal) {
