@@ -26,13 +26,13 @@ public class Message {
     private Instant createdAt;
 
     @Column(name = "content", nullable = false)
-    private UUID content;
+    private String content;
 
     @Column(name = "sender", nullable = false)
     private UUID sender;
 
     @Column(name = "receiver", nullable = false)
-    private String receiver;
+    private UUID receiver;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
