@@ -9,4 +9,6 @@ public interface MessageService {
     void sendMessage(Principal sender, IncomingMessage message);
 
     void acknowledge(Principal receiver, MessageAck ack);
+
+    void syncUndelivered(Principal principal);
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,23 +28,24 @@ public class MessageServiceImpl implements MessageService {
 
         UUID senderId = UUID.fromString(principal.getName());
 
-        Message entity = Message.builder()
+        Message msg = Message.builder()
                 .sender(senderId)
-                .receiver(UUID.fromString(String.valueOf(incoming.receiver())))
-                .content(String.valueOf(incoming.content()))
+                .receiver(incoming.receiver())
+                .content(incoming.content())
                 .status(MessageStatus.SENT)
                 .createdAt(Instant.now())
                 .build();
 
-        messageRepository.save(entity);
+        messageRepository.save(msg);
 
         messagingTemplate.convertAndSendToUser(
                 incoming.receiver().toString(),
                 "/queue/messages",
                 new OutgoingMessage(
+                        msg.getId(),
                         senderId,
                         incoming.content(),
-                        entity.getCreatedAt()
+                        msg.getCreatedAt()
                 )
         );
     }
@@ -53,19 +55,49 @@ public class MessageServiceImpl implements MessageService {
 
         UUID receiverId = UUID.fromString(principal.getName());
 
-        Message message = messageRepository.findById(ack.messageId())
+        Message msg = messageRepository.findById(ack.messageId())
                 .orElseThrow(() -> new IllegalArgumentException("Message not found"));
 
-        if (!message.getReceiver().equals(receiverId)) {
+        if (!msg.getReceiver().equals(receiverId)) {
             throw new AccessDeniedException("Invalid ACK");
         }
 
-        if (message.getStatus() == MessageStatus.DELIVERED) {
+        if (msg.getStatus() == MessageStatus.DELIVERED) {
             return;
         }
 
-        message.setStatus(MessageStatus.DELIVERED);
-        messageRepository.save(message);
+        msg.setStatus(MessageStatus.DELIVERED);
+        messageRepository.save(msg);
+
+        messagingTemplate.convertAndSendToUser(
+                msg.getSender().toString(),
+                "/queue/delivery",
+                new MessageAck(msg.getId())
+        );
+    }
+
+    @Override
+    public void syncUndelivered(Principal principal) {
+
+        UUID receiverId = UUID.fromString(principal.getName());
+
+        List<Message> undeliveredMsg = messageRepository.findByReceiverAndStatusOrderByCreatedAt(
+                receiverId,
+                MessageStatus.SENT
+        );
+
+        for (Message msg : undeliveredMsg) {
+            messagingTemplate.convertAndSendToUser(
+                    receiverId.toString(),
+                    "/queue/messages",
+                    new OutgoingMessage(
+                            msg.getId(),
+                            msg.getSender(),
+                            msg.getContent(),
+                            msg.getCreatedAt()
+                    )
+            );
+        }
     }
 
 }
