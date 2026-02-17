@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "message")
+@Table(name = "messages")
 public class Message {
 
     @Id
