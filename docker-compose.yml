@@ -67,10 +67,13 @@ services:
 #    container_name: friends
 #    environment:
 #      SPRING_PROFILES_ACTIVE: friends
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+#      SPRING_DATASOURCE_USERNAME: postgres.rhynvergxcgxfpcakenn
+#      SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
+#      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
+#      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
 #    ports:
 #      - "8092:8092"
-#    depends_on:
-#      - postgres-friends
 #    networks:
 #      - spring
 
