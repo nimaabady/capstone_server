@@ -66,4 +66,41 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
+
+    //use this in prod
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        registration.interceptors(new ChannelInterceptor() {
+//            @Override
+//            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+//                StompHeaderAccessor accessor =
+//                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+//
+//                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+//                    // In Prod, look for the 'Authorization' header
+//                    String bearerToken = accessor.getFirstNativeHeader("Authorization");
+//
+//                    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+//                        String jwt = bearerToken.substring(7);
+//
+//                        // 1. Validate the JWT signature and expiration
+//                        // 2. Extract the 'sub' (Subject), which should be your User UUID
+//                        if (jwtUtils.validateToken(jwt)) {
+//                            String userId = jwtUtils.extractUserId(jwt);
+//
+//                            // Create a real Authentication object for Spring Security
+//                            UsernamePasswordAuthenticationToken auth =
+//                                    new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
+//
+//                            accessor.setUser(auth);
+//                        } else {
+//                            // Reject the connection if the token is invalid
+//                            throw new MessageDeliveryException("Invalid JWT");
+//                        }
+//                    }
+//                }
+//                return message;
+//            }
+//        });
+//    }
 }

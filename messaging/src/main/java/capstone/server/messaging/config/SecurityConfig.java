@@ -13,9 +13,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 //                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/ws/**").permitAll()
+//                        .requestMatchers("/ws/**", "/ws-sockjs/**").permitAll()
 //                        .anyRequest().authenticated()
 //                );
+                // If using JWTs, add a session policy
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest()
                         .permitAll()
