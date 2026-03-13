@@ -30,12 +30,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public RegisterResponseDto registerUser(RegisterRequestDto dto) {
 
-        if (dto.username() == null || dto.email() == null || dto.password() == null) {
-            throw new IllegalArgumentException("All fields are required.");
-        }
-        if (!isEmail(dto.email())) {
-            throw new IllegalArgumentException("Invalid email address.");
-        }
         if (_authRepository.existsByEmail(dto.email())) {
             throw new BadRequestException("Email already registered.");
         }
@@ -64,10 +58,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDto loginUser(LoginRequestDto dto) {
-
-        if (dto.usernameOrEmail() == null || dto.password() == null) {
-            throw new IllegalArgumentException("All fields are required.");
-        }
 
         User user;
 
@@ -128,9 +118,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void changePassword(UpdatePasswordDto dto, UUID id) {
 
-        if (dto.currentPassword() == null || dto.newPassword() == null) {
-            throw new IllegalArgumentException("All fields are required.");
-        }
         if (dto.currentPassword().equals(dto.newPassword())) {
             throw new IllegalArgumentException("Passwords can't be the same.");
         }
@@ -153,9 +140,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UpdateResponseDto changeEmail(UpdateEmailDto dto, UUID id) {
 
-        if (dto.currentEmail() == null || dto.newEmail() == null) {
-            throw new IllegalArgumentException("All fields are required.");
-        }
         if (dto.currentEmail().equals(dto.newEmail())) {
             throw new IllegalArgumentException("Emails can't be the same.");
         }
@@ -188,9 +172,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UpdateResponseDto changeUsername(UpdateUsernameDto dto, UUID id) {
 
-        if (dto.currentUsername() == null || dto.newUsername() == null) {
-            throw new IllegalArgumentException("All fields are required.");
-        }
         if (dto.currentUsername().equals(dto.newUsername())) {
             throw new IllegalArgumentException("Usernames can't be the same.");
         }

@@ -1,13 +1,12 @@
 package com.capstone.server.auth.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public record UpdateEmailDto(
 
-        @NotNull
-        String currentEmail,
+        @NotBlank @Email String currentEmail,
 
-        @NotNull
-        String newEmail
+        @NotBlank @Email String newEmail
 ) {
 }

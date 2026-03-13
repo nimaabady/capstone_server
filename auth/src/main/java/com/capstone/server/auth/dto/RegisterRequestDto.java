@@ -1,18 +1,14 @@
 package com.capstone.server.auth.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record RegisterRequestDto(
 
-        @NotNull
-        String username,
+        @NotBlank String username,
 
-        @NotNull
-        @Email
-        String email,
+        @NotBlank @Email String email,
 
-        @NotNull
-        String password
+        @NotBlank String password
 ) {
 }

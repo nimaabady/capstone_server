@@ -1,13 +1,11 @@
 package com.capstone.server.auth.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record UpdateUsernameDto(
 
-        @NotNull
-        String currentUsername,
+        @NotBlank String currentUsername,
 
-        @NotNull
-        String newUsername
+        @NotBlank String newUsername
 ) {
 }
