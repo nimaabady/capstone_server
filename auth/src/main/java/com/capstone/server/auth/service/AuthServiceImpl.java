@@ -3,6 +3,7 @@ package com.capstone.server.auth.service;
 import com.capstone.server.auth.dto.*;
 import com.capstone.server.auth.exception.AuthenticationException;
 import com.capstone.server.auth.exception.BadRequestException;
+import com.capstone.server.auth.exception.ForbiddenException;
 import com.capstone.server.auth.exception.NotFoundException;
 import com.capstone.server.auth.model.User;
 import com.capstone.server.auth.model.UserStatus;
@@ -78,21 +79,23 @@ public class AuthServiceImpl implements AuthService {
                     .orElseThrow(() -> new NotFoundException("User doesn't exist."));
         }
 
-        if (!_passwordEncoder.matches(dto.password(), user.getHashedPassword())) {
+        if (_passwordEncoder.matches(dto.password(), user.getHashedPassword())) {
+
+            user.setStatus(UserStatus.Online);
+            _authRepository.save(user);
+
+            String token = _jwtService.generateToken(user);
+
+            return new LoginResponseDto(
+                    token,
+                    user.getEmail(),
+                    user.getUsername(),
+                    user.getStatus()
+            );
+
+        } else {
             throw new AuthenticationException("Invalid credentials.");
         }
-
-        user.setStatus(UserStatus.Online);
-        _authRepository.save(user);
-
-        String token = _jwtService.generateToken(user);
-
-        return new LoginResponseDto(
-                token,
-                user.getEmail(),
-                user.getUsername(),
-                user.getStatus()
-        );
     }
 
     @Override
@@ -135,15 +138,17 @@ public class AuthServiceImpl implements AuthService {
         User user = _authRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User doesn't exist."));
 
-        if (!_passwordEncoder.matches(dto.currentPassword(), user.getHashedPassword())) {
-            throw new AuthenticationException("Current password is incorrect.");
+        if (_passwordEncoder.matches(dto.currentPassword(), user.getHashedPassword())) {
+
+            String hashedPassword = _passwordEncoder.encode(dto.newPassword());
+            user.setHashedPassword(hashedPassword);
+            _authRepository.save(user);
+
+        } else {
+            throw new ForbiddenException("Current password is incorrect.");
         }
-
-        String hashedPassword = _passwordEncoder.encode(dto.newPassword());
-
-        user.setHashedPassword(hashedPassword);
-        _authRepository.save(user);
     }
+
 
     @Override
     public UpdateResponseDto changeEmail(UpdateEmailDto dto, UUID id) {
@@ -164,14 +169,20 @@ public class AuthServiceImpl implements AuthService {
         User user = _authRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User doesn't exist."));
 
-        user.setEmail(dto.newEmail());
-        User saved = _authRepository.save(user);
+        if (user.getEmail().equals(dto.currentEmail())) {
 
-        return new UpdateResponseDto(
-                saved.getId(),
-                saved.getEmail(),
-                saved.getUsername()
-        );
+            user.setEmail(dto.newEmail());
+            User saved = _authRepository.save(user);
+
+            return new UpdateResponseDto(
+                    saved.getId(),
+                    saved.getEmail(),
+                    saved.getUsername()
+            );
+
+        } else {
+            throw new ForbiddenException("Current email is incorrect.");
+        }
     }
 
     @Override
@@ -190,14 +201,20 @@ public class AuthServiceImpl implements AuthService {
         User user = _authRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User doesn't exist."));
 
-        user.setUsername(dto.newUsername());
-        User saved = _authRepository.save(user);
+        if (user.getUsername().equals(dto.currentUsername())) {
 
-        return new UpdateResponseDto(
-                saved.getId(),
-                saved.getEmail(),
-                saved.getUsername()
-        );
+            user.setUsername(dto.newUsername());
+            User saved = _authRepository.save(user);
+
+            return new UpdateResponseDto(
+                    saved.getId(),
+                    saved.getEmail(),
+                    saved.getUsername()
+            );
+
+        } else {
+            throw new ForbiddenException("Current username is incorrect.");
+        }
     }
 
     // Helper function to check email format
