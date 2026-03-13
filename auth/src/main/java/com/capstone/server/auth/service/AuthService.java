@@ -1,9 +1,8 @@
 package com.capstone.server.auth.service;
 
-import com.capstone.server.auth.dto.LoginRequestDto;
-import com.capstone.server.auth.dto.LoginResponseDto;
-import com.capstone.server.auth.dto.RegisterResponseDto;
-import com.capstone.server.auth.dto.RegisterRequestDto;
+import com.capstone.server.auth.dto.*;
+
+import java.util.UUID;
 
 public interface AuthService {
 
@@ -11,5 +10,14 @@ public interface AuthService {
 
    LoginResponseDto loginUser(LoginRequestDto dto);
 
+   void deleteUser(UUID id);
+
+   void logout(UUID id);
+
+   void changePassword(UpdatePasswordDto dto, UUID id);
+
+   UpdateResponseDto changeEmail(UpdateEmailDto dto, UUID id);
+
+   UpdateResponseDto changeUsername(UpdateUsernameDto dto, UUID id);
 
 }

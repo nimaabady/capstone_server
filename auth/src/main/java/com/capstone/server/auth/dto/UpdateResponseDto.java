@@ -2,21 +2,17 @@ package com.capstone.server.auth.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-import java.sql.Date;
 import java.util.UUID;
 
-public record RegisterResponseDto(
+public record UpdateResponseDto(
 
         @NotNull
         UUID id,
 
         @NotNull
-        String username,
-
-        @NotNull
         String email,
 
         @NotNull
-        Date createdAt
-) {
-}
+        String username
+
+) { }
