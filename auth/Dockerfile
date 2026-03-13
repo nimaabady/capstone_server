@@ -17,7 +17,7 @@ RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
 COPY src src
 
 # Build
-RUN ./gradlew clean bootJar --no-daemon -x processAot
+RUN ./gradlew clean bootJar --no-daemon
 
 # ================================
 # Runtime stage

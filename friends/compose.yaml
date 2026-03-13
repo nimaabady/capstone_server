@@ -1,9 +1,0 @@
-services:
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=postgresql://postgres.rhynvergxcgxfpcakenn:BOCUQN7Vtoxbwpk4@aws-1-us-east-2.pooler.supabase.com:5432/postgres'
-      - 'POSTGRES_PASSWORD=BOCUQN7Vtoxbwpk4'
-      - 'POSTGRES_USER=rhynvergxcgxfpcakenn'
-    ports:
-      - '5432'

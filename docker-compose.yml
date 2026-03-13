@@ -32,9 +32,9 @@ services:
 #    networks:
 #      - spring
 #
-  user-login:
-    build: ./user-login
-    container_name: users-login
+  auth:
+    build: ./auth
+    container_name: auth
     environment:
       SPRING_PROFILES_ACTIVE: users
       SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
