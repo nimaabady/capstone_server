@@ -1,10 +1,10 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.5.6"
+	id("org.springframework.boot") version "4.0.2"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "com.capstone"
+group = "capstone.server"
 version = "0.0.1-SNAPSHOT"
 description = "Demo project for Spring Boot"
 
@@ -40,7 +40,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // Lhekdup added this
-    implementation(project(":user-login"))
+    implementation(project(":auth"))
 
 
 }
