@@ -4,3 +4,6 @@ pluginManagement {
     }
 }
 rootProject.name = "server"
+
+// Lhekdup added this
+include(":auth")

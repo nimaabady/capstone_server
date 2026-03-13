@@ -1,46 +1,49 @@
 services:
-  postgres-users:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: users
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5433:5432"
-    networks:
-      - spring
+#  postgres-users:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: users
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: password
+#    ports:
+#      - "5433:5432"
+#    networks:
+#      - spring
+#
+#  postgres-messages:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: messages
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: password
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - spring
 
-  postgres-messages:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: messages
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    networks:
-      - spring
-
-  postgres-friends:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: friends
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5434:5432"
-    networks:
-      - spring
-
-  user-login:
-    build: ./user-login
-    container_name: users-login
+#  postgres-friends:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: friends
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#    ports:
+#      - "5434:5432"
+#    networks:
+#      - spring
+#
+  auth:
+    build: ./auth
+    container_name: auth
     environment:
       SPRING_PROFILES_ACTIVE: users
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+      SPRING_DATASOURCE_USERNAME: postgres.rhynvergxcgxfpcakenn
+      SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
     ports:
       - "8090:8090"
-    depends_on:
-      - postgres-users
     networks:
       - spring
 
@@ -49,11 +52,13 @@ services:
     container_name: messaging
     environment:
       SPRING_PROFILES_ACTIVE: messaging
-
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+      SPRING_DATASOURCE_USERNAME: postgres.rhynvergxcgxfpcakenn
+      SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
     ports:
       - "8091:8091"
-    depends_on:
-      - postgres-messages
     networks:
       - spring
 
@@ -62,22 +67,25 @@ services:
     container_name: friends
     environment:
       SPRING_PROFILES_ACTIVE: friends
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres.rhynvergxcgxfpcakenn
+      SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
     ports:
       - "8092:8092"
-    depends_on:
-      - postgres-friends
     networks:
       - spring
 
-  pgadmin:
-    image: dpage/pgadmin4:9.9
-    ports:
-      - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: user@domain.ca
-      PGADMIN_DEFAULT_PASSWORD: password
-    networks:
-      - spring
+#  pgadmin:
+#    image: dpage/pgadmin4:9.9
+#    ports:
+#      - "8888:80"
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: user@domain.ca
+#      PGADMIN_DEFAULT_PASSWORD: password
+#    networks:
+#      - spring
 
 #  rabbitmq:
 #    image: 'rabbitmq:latest'
