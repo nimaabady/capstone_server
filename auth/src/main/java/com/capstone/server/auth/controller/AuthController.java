@@ -28,39 +28,45 @@ public class AuthController {
         return ResponseEntity.ok(authService.loginUser(dto));
     }
 
-    @PostMapping("/logout/{id}")
-    public ResponseEntity<Void> logout(@PathVariable UUID id) {
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
 
-        authService.logout(id);
+        authService.logout(getUserId());
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> delete() {
 
-        authService.deleteUser(id);
+        authService.deleteUser(getUserId());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/password/{id}")
-    public ResponseEntity<Void> updatePassword(@PathVariable UUID id,
-                                               @Valid @RequestBody UpdatePasswordDto dto) {
+    @PutMapping("/password")
+    public ResponseEntity<Void> updatePassword(@Valid @RequestBody UpdatePasswordDto dto) {
 
-        authService.changePassword(dto, id);
+        authService.changePassword(dto, getUserId());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/username/{id}")
-    public ResponseEntity<UpdateResponseDto> changeUsername(@PathVariable UUID id,
-                                                            @Valid @RequestBody UpdateUsernameDto dto) {
+    @PutMapping("/username")
+    public ResponseEntity<UpdateResponseDto> changeUsername(@Valid @RequestBody UpdateUsernameDto dto) {
 
-        return ResponseEntity.ok(authService.changeUsername(dto, id));
+        return ResponseEntity.ok(authService.changeUsername(dto, getUserId()));
     }
 
-    @PutMapping("/email/{id}")
-    public ResponseEntity<UpdateResponseDto> changeEmail(@PathVariable UUID id,
-                                                         @Valid @RequestBody UpdateEmailDto dto) {
+    @PutMapping("/email")
+    public ResponseEntity<UpdateResponseDto> changeEmail(@Valid @RequestBody UpdateEmailDto dto) {
 
-        return ResponseEntity.ok(authService.changeEmail(dto, id));
+        return ResponseEntity.ok(authService.changeEmail(dto, getUserId()));
+    }
+
+    private UUID getUserId() {
+        String userIdString = org.springframework.security.core.context.SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return UUID.fromString(userIdString);
     }
 }
