@@ -89,6 +89,38 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public UserResponseDto getUserById(UUID id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("Invalid id.");
+        }
+
+        User user = _authRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User doesn't exist."));
+
+        return new UserResponseDto(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getStatus(),
+                user.getCreatedAt() == null ? null : new java.sql.Date(user.getCreatedAt().getTime())
+        );
+    }
+
+    @Override
+    public UserIdResponseDto getUserIdByUsername(String username) {
+
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid username.");
+        }
+
+        User user = _authRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User doesn't exist."));
+
+        return new UserIdResponseDto(user.getId());
+    }
+
+    @Override
     public void deleteUser(UUID id) {
 
         if (id == null) {

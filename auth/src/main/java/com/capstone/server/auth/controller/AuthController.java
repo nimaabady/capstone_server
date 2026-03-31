@@ -61,6 +61,16 @@ public class AuthController {
         return ResponseEntity.ok(authService.changeEmail(dto, getUserId()));
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok(authService.getUserById(id));
+    }
+
+    @GetMapping({"/users/get-id-by-username/{username}", "/users/getIdByUsername/{username}"})
+    public ResponseEntity<UserIdResponseDto> getUserIdByUsername(@PathVariable String username) {
+        return ResponseEntity.ok(authService.getUserIdByUsername(username));
+    }
+
     private UUID getUserId() {
         String userIdString = org.springframework.security.core.context.SecurityContextHolder
                 .getContext()

@@ -48,4 +48,16 @@ public interface FriendRepository extends JpaRepository<Friend, UUID> {
       AND (user_id = :userId OR friend_id = :userId)
     """, nativeQuery = true)
     List<UUID> findFriendIds(@Param("userId") UUID userId);
+
+    @Query(value = """
+        SELECT
+          CASE
+            WHEN user_id = :userId THEN friend_id
+            ELSE user_id
+          END AS friend_id
+        FROM friends
+        WHERE status = 'PENDING'
+          AND (user_id = :userId OR friend_id = :userId)
+        """, nativeQuery = true)
+    List<UUID> findPendingSenderIds(@Param("userId") UUID userId);
 }

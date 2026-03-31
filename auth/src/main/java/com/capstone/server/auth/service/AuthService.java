@@ -10,6 +10,10 @@ public interface AuthService {
 
    LoginResponseDto loginUser(LoginRequestDto dto);
 
+   UserResponseDto getUserById(UUID id);
+
+   UserIdResponseDto getUserIdByUsername(String username);
+
    void deleteUser(UUID id);
 
    void logout(UUID id);

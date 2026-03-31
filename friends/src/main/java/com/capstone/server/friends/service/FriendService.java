@@ -12,4 +12,5 @@ public interface FriendService {
     FriendResponse sendFriendRequest(FriendRequest friendRequest);
     ResponseEntity<?> handleFriendRequest(FriendRequest friendRequest);
     List<UUID> findAllFriends(UUID user_id);
+    List<UUID> findAllPendingFriendRequests(UUID userId);
 }
