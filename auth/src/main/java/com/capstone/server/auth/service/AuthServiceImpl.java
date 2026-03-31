@@ -1,11 +1,11 @@
 package com.capstone.server.auth.service;
 
-import capstone.server.security.service.JwtService;
 import com.capstone.server.auth.dto.*;
 import com.capstone.server.auth.exception.AuthenticationException;
 import com.capstone.server.auth.exception.BadRequestException;
 import com.capstone.server.auth.exception.ForbiddenException;
 import com.capstone.server.auth.exception.NotFoundException;
+import com.capstone.server.auth.jwt.service.JwtService;
 import com.capstone.server.auth.model.User;
 import com.capstone.server.auth.model.UserStatus;
 import com.capstone.server.auth.repository.AuthRepository;

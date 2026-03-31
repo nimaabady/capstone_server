@@ -16,12 +16,22 @@ java {
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs("libs") // Tells Gradle: "Treat this folder like a real Maven repo"
+    }
 }
 
 extra["springCloudVersion"] = "2025.1.0"
 
 dependencies {
-    implementation(project(":security"))
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    implementation ("com.fasterxml.jackson.core:jackson-databind")
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")

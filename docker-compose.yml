@@ -1,38 +1,4 @@
 services:
-#  postgres-users:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: users
-#      POSTGRES_USER: admin
-#      POSTGRES_PASSWORD: password
-#    ports:
-#      - "5433:5432"
-#    networks:
-#      - spring
-#
-#  postgres-messages:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: messages
-#      POSTGRES_USER: admin
-#      POSTGRES_PASSWORD: password
-#    ports:
-#      - "5432:5432"
-#    networks:
-#      - spring
-
-#  postgres-friends:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: friends
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#    ports:
-#      - "5434:5432"
-#    networks:
-#      - spring
-#
-
   gateway:
     build: ./gateway
     container_name: gateway
@@ -42,6 +8,9 @@ services:
       SERVICES_AUTH_URL: http://auth:8090
       SERVICES_MESSAGING_URL: http://messaging:8091
       SERVICES_FRIENDS_URL: http://friends:8092
+
+      JWT_SECRET: 2502db48edbfbe54b02d318f50e4e4cb
+      JWT_EXPIRATION: 12345678
     ports:
       - "9000:9000"
     networks:
@@ -57,6 +26,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
+
+      JWT_SECRET: 2502db48edbfbe54b02d318f50e4e4cb
+      JWT_EXPIRATION: 12345678
     ports:
       - "8090:8090"
     networks:
@@ -72,6 +44,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
+
+      JWT_SECRET: 2502db48edbfbe54b02d318f50e4e4cb
+      JWT_EXPIRATION: 12345678
     ports:
       - "8091:8091"
     networks:
@@ -87,20 +62,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
+
+      JWT_SECRET: 2502db48edbfbe54b02d318f50e4e4cb
+      JWT_EXPIRATION: 12345678
     ports:
       - "8092:8092"
     networks:
       - spring
 
-#  pgadmin:
-#    image: dpage/pgadmin4:9.9
-#    ports:
-#      - "8888:80"
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: user@domain.ca
-#      PGADMIN_DEFAULT_PASSWORD: password
-#    networks:
-#      - spring
 
 #  rabbitmq:
 #    image: 'rabbitmq:latest'

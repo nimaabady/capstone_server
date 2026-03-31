@@ -1,11 +1,10 @@
 package capstone.server.gateway.config;
 
-import capstone.server.security.config.JwtAuthenticationEntryPoint;
-import capstone.server.security.config.JwtAuthenticationFilter;
+import capstone.server.gateway.jwt.config.JwtAuthenticationEntryPoint;
+import capstone.server.gateway.jwt.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,12 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Import({
-        capstone.server.security.config.JwtAuthenticationFilter.class,
-        capstone.server.security.config.JwtAuthenticationEntryPoint.class,
-        capstone.server.security.service.JwtService.class,
-        capstone.server.security.config.JacksonConfig.class
-})
+
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -43,15 +37,9 @@ public class SecurityConfig {
                         .authenticationEntryPoint(unauthorizedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Allow anyone to access login and register
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-
-                        // Allow WebSocket handshake through the gateway unhindered.
-                        // interceptor on the messaging service validates the JWT
                         .requestMatchers("/ws/**").permitAll()
-
-                        // Protect all other microservice endpoints
-                        .requestMatchers("/api/auth/**", "/api/messaging/**", "/api/friends/**").authenticated()
+                        .requestMatchers("/api/auth/**", "/messaging/**", "/api/friends/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -62,7 +50,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // This stops Spring from generating the random password
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
@@ -70,4 +57,3 @@ public class SecurityConfig {
         };
     }
 }
-

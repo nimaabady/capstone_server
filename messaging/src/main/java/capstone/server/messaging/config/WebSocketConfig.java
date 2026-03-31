@@ -1,5 +1,7 @@
 package capstone.server.messaging.config;
 
+import capstone.server.messaging.jwt.service.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -17,7 +19,10 @@ import java.security.Principal;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final JwtService jwtService;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -37,7 +42,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/queue");
     }
 
-    // this is for testing without users
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -47,19 +51,24 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // Read the user id header provided by the client
-                    String userId = accessor.getFirstNativeHeader("user-id");
-                    System.out.println("Login attempt for User ID: " + userId);
+                    // 1. Grab the JWT from the STOMP headers (e.g., "Authorization: Bearer <token>")
+                    String authHeader = accessor.getFirstNativeHeader("Authorization");
 
-                    // if no user id create custom principal
-                    if (userId != null) {
-                        Principal user = new Principal() {
-                            @Override
-                            public String getName() {
-                                return userId;
-                            }
-                        };
-                        accessor.setUser(user);
+                    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                        String token = authHeader.substring(7);
+
+                        // 2. Validate the token and extract the real, cryptographically secure UUID
+                        if (jwtService.isTokenValid(token)) {
+                            String userId = jwtService.extractUserId(token);
+
+                            Principal user = () -> userId;
+                            accessor.setUser(user);
+                            System.out.println("Secure WebSocket Login for User ID: " + userId);
+                        } else {
+                            throw new IllegalArgumentException("Invalid JWT for WebSocket connection");
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Missing JWT for WebSocket connection");
                     }
                 }
                 return message;

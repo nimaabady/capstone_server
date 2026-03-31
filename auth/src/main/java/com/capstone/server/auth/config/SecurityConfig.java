@@ -1,11 +1,10 @@
 package com.capstone.server.auth.config;
 
-import capstone.server.security.config.JwtAuthenticationEntryPoint;
-import capstone.server.security.config.JwtAuthenticationFilter;
+import com.capstone.server.auth.jwt.config.JwtAuthenticationEntryPoint;
+import com.capstone.server.auth.jwt.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,12 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Import({
-        capstone.server.security.config.JwtAuthenticationFilter.class,
-        capstone.server.security.config.JwtAuthenticationEntryPoint.class,
-        capstone.server.security.service.JwtService.class,
-        capstone.server.security.config.JacksonConfig.class
-})
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
