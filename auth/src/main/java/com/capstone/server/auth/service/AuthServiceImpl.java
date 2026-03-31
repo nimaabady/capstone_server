@@ -1,5 +1,6 @@
 package com.capstone.server.auth.service;
 
+import capstone.server.security.service.JwtService;
 import com.capstone.server.auth.dto.*;
 import com.capstone.server.auth.exception.AuthenticationException;
 import com.capstone.server.auth.exception.BadRequestException;
@@ -74,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
             user.setStatus(UserStatus.Online);
             _authRepository.save(user);
 
-            String token = _jwtService.generateToken(user);
+            String token = _jwtService.generateToken(user.getId());
 
             return new LoginResponseDto(
                     token,

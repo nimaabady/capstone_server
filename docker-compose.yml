@@ -32,11 +32,26 @@ services:
 #    networks:
 #      - spring
 #
+
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: gateway
+
+      SERVICES_AUTH_URL: http://auth:8090
+      SERVICES_MESSAGING_URL: http://messaging:8091
+      SERVICES_FRIENDS_URL: http://friends:8092
+    ports:
+      - "9000:9000"
+    networks:
+      - spring
+
   auth:
     build: ./auth
     container_name: auth
     environment:
-      SPRING_PROFILES_ACTIVE: users
+      SPRING_PROFILES_ACTIVE: auth
       SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
       SPRING_DATASOURCE_USERNAME: postgres.rhynvergxcgxfpcakenn
       SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4

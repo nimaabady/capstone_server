@@ -25,6 +25,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":security"))
+
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.boot:spring-boot-starter-ldap")
     implementation("org.springframework.boot:spring-boot-starter-restclient")

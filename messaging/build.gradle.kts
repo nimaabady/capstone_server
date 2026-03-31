@@ -25,6 +25,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":security"))
+
     implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
@@ -33,16 +35,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
+
     implementation("org.springframework.amqp:spring-rabbit-stream")
+    implementation("org.springframework.security:spring-security-messaging")
+
     implementation("org.springframework.integration:spring-integration-amqp")
     implementation("org.springframework.integration:spring-integration-jdbc")
     implementation("org.springframework.integration:spring-integration-jpa")
     implementation("org.springframework.integration:spring-integration-stomp")
     implementation("org.springframework.integration:spring-integration-websocket")
-    implementation("org.springframework.security:spring-security-messaging")
+
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-amqp-test")
