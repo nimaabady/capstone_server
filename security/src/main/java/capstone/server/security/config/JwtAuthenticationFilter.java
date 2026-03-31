@@ -1,6 +1,6 @@
-package com.capstone.server.auth.config;
+package capstone.server.security.config;
 
-import com.capstone.server.auth.service.JwtService;
+import capstone.server.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

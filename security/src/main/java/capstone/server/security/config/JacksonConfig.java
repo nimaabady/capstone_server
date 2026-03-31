@@ -1,4 +1,4 @@
-package com.capstone.server.auth.config;
+package capstone.server.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

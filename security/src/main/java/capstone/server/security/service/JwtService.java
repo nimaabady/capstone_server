@@ -1,15 +1,14 @@
-package com.capstone.server.auth.service;
+package capstone.server.security.service;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.capstone.server.auth.model.User;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -24,9 +23,9 @@ public class JwtService {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(User user) {
+    public String generateToken(UUID userId) {
         return Jwts.builder()
-                .setSubject(user.getId().toString())
+                .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
