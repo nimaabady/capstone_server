@@ -46,19 +46,21 @@ public class MessageServiceImpl implements MessageService {
                 .createdAt(Instant.now())
                 .build();
 
+        Message savedMsg = messageRepository.save(msg);
+
         // Push to the receiver's message queue
         messagingTemplate.convertAndSendToUser(
                 incoming.receiver().toString(),
                 "/queue/messages",
                 new OutgoingMessage(
-                        msg.getId(),
+                        savedMsg.getId(),
                         senderId,
                         incoming.content(),
-                        msg.getCreatedAt()
+                        savedMsg.getCreatedAt()
                 )
         );
 
-        messageRepository.save(msg);
+
     }
 
     /**
