@@ -2,6 +2,7 @@ package capstone.server.gateway.routes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -19,10 +20,12 @@ public class GatewayRoutes {
     private static final Logger log = LoggerFactory.getLogger(GatewayRoutes.class);
 
     @Bean
-    public RouterFunction<ServerResponse> gatewayRouterFunctions() {
+    public RouterFunction<ServerResponse> gatewayRouterFunctions(
+            @Value("${services.auth-url:http://localhost:8090}") String authBaseUrl,
+            @Value("${services.friends-url:http://localhost:8092}") String friendsBaseUrl) {
         return route("auth")
                 .route(path("/api/auth/**"), http())
-                .before(uri(URI.create("http://localhost:8090")))
+                .before(uri(URI.create(authBaseUrl)))
                 .build()
 
 //                .and(route("messaging_ws")
@@ -46,7 +49,7 @@ public class GatewayRoutes {
 
                 .and(route("friends")
                         .route(path("/api/friends/**"), http())
-                        .before(uri(URI.create("http://localhost:8092")))
+                        .before(uri(URI.create(friendsBaseUrl)))
                         .build());
     }
 }
