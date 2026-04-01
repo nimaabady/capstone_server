@@ -85,4 +85,7 @@ public class FriendServiceImpl implements FriendService {
     public List<UUID> findAllFriends(UUID user_id) {
         return friendRepository.findFriendIds(user_id);
     }
+
+    @Override
+    public List<UUID> findAllPendingFriendRequests(UUID userId) { return friendRepository.findPendingSenderIds(userId); }
 }

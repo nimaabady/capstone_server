@@ -36,4 +36,9 @@ public class FriendController {
     public ResponseEntity<?> getAllFriends(@PathVariable UUID user_id){
         return new ResponseEntity<>(this.friendService.findAllFriends(user_id), HttpStatus.OK);
     }
+
+    @GetMapping("/getAllPendingRequests/{user_id}")
+    public ResponseEntity<?> getAllPendingRequests(@PathVariable UUID user_id){
+        return new ResponseEntity<>(this.friendService.findAllPendingFriendRequests(user_id), HttpStatus.OK);
+    }
 }
