@@ -24,7 +24,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // disable CSRF for Postman/testing
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/friendRequest/**", "/api/handleFriendRequest/**", "/api/getAllFriends/**")
+                        // Paths moved under /api/friends (see FriendController). JWT is enforced at the gateway for clients.
+                        .requestMatchers("/api/friends/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 );
