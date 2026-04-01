@@ -15,8 +15,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.security.Principal;
-
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -47,28 +45,29 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
+                if (accessor != null && accessor.getCommand() != null) {
+                    System.out.println("MESSAGING-WS: Received STOMP Command: " + accessor.getCommand());
+                }
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // 1. Grab the JWT from the STOMP headers (e.g., "Authorization: Bearer <token>")
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
+                    System.out.println("MESSAGING-WS: Auth Header present: " + (authHeader != null));
 
                     if (authHeader != null && authHeader.startsWith("Bearer ")) {
                         String token = authHeader.substring(7);
-
-                        // 2. Validate the token and extract the real, cryptographically secure UUID
                         if (jwtService.isTokenValid(token)) {
                             String userId = jwtService.extractUserId(token);
-
-                            Principal user = () -> userId;
-                            accessor.setUser(user);
-                            System.out.println("Secure WebSocket Login for User ID: " + userId);
+                            accessor.setUser(() -> userId);
+                            System.out.println("MESSAGING-WS: Auth SUCCESS for User: " + userId);
                         } else {
-                            throw new IllegalArgumentException("Invalid JWT for WebSocket connection");
+                            System.out.println("MESSAGING-WS: Auth FAILED - Invalid Token");
+                            throw new IllegalArgumentException("Invalid JWT");
                         }
                     } else {
-                        throw new IllegalArgumentException("Missing JWT for WebSocket connection");
+                        System.out.println("MESSAGING-WS: Auth FAILED - No Header");
+                        throw new IllegalArgumentException("Missing JWT");
                     }
                 }
                 return message;
