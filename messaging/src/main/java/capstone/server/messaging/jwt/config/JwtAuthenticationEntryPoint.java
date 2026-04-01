@@ -1,6 +1,6 @@
-package com.capstone.server.auth.config;
+package capstone.server.messaging.jwt.config;
 
-import com.capstone.server.auth.exception.ErrorResponse;
+import capstone.server.messaging.jwt.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,3 +36,4 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.getWriter().write(objectMapper.writeValueAsString(error));
     }
 }
+

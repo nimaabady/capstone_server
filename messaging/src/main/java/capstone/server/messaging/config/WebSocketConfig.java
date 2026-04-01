@@ -1,5 +1,7 @@
 package capstone.server.messaging.config;
 
+import capstone.server.messaging.jwt.service.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -13,11 +15,12 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.security.Principal;
-
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final JwtService jwtService;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -34,32 +37,37 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
-        registry.enableSimpleBroker("/queue");
+        registry.enableSimpleBroker("/queue", "/topic");
     }
 
-    // this is for testing without users
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
+                if (accessor != null && accessor.getCommand() != null) {
+                    System.out.println("MESSAGING-WS: Received STOMP Command: " + accessor.getCommand());
+                }
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // Read the user id header provided by the client
-                    String userId = accessor.getFirstNativeHeader("user-id");
-                    System.out.println("Login attempt for User ID: " + userId);
+                    String authHeader = accessor.getFirstNativeHeader("Authorization");
+                    System.out.println("MESSAGING-WS: Auth Header present: " + (authHeader != null));
 
-                    // if no user id create custom principal
-                    if (userId != null) {
-                        Principal user = new Principal() {
-                            @Override
-                            public String getName() {
-                                return userId;
-                            }
-                        };
-                        accessor.setUser(user);
+                    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                        String token = authHeader.substring(7);
+                        if (jwtService.isTokenValid(token)) {
+                            String userId = jwtService.extractUserId(token);
+                            accessor.setUser(() -> userId);
+                            System.out.println("MESSAGING-WS: Auth SUCCESS for User: " + userId);
+                        } else {
+                            System.out.println("MESSAGING-WS: Auth FAILED - Invalid Token");
+                            throw new IllegalArgumentException("Invalid JWT");
+                        }
+                    } else {
+                        System.out.println("MESSAGING-WS: Auth FAILED - No Header");
+                        throw new IllegalArgumentException("Missing JWT");
                     }
                 }
                 return message;

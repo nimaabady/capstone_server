@@ -1,6 +1,7 @@
 package com.capstone.server.auth.config;
 
-import jakarta.servlet.http.HttpServletResponse;
+import com.capstone.server.auth.jwt.config.JwtAuthenticationEntryPoint;
+import com.capstone.server.auth.jwt.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final JwtAuthenticationEntryPoint unauthorizedHandler; // <--- ADD THIS
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,9 +37,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/users/get-id-by-username/**").permitAll()
-                        .requestMatchers("/api/auth/users/getIdByUsername/**").permitAll()
-                        .requestMatchers("/api/auth/logout").authenticated()
+                        .requestMatchers("/api/auth/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

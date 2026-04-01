@@ -22,6 +22,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 }
 
 dependencies {
@@ -38,11 +39,6 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.amqp:spring-rabbit-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // Lhekdup added this
-    implementation(project(":auth"))
-
-
 }
 
 tasks.withType<Test> {

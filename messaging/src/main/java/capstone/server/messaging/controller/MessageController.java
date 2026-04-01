@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @Controller
+@RequestMapping()
 @RequiredArgsConstructor
 public class MessageController {
 
