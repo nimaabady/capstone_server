@@ -69,7 +69,7 @@ public class MessagingIntergrationTests {
         String content = "Hello from Testcontainers";
         when(principal.getName()).thenReturn(senderId.toString());
 
-        messageService.sendMessage(principal, new IncomingMessage(receiverId, content));
+        messageService.sendPrivateMessage(principal, new IncomingMessage(receiverId, content));
 
         var messages = messageRepository.findByReceiverAndStatusOrderByCreatedAt(receiverId, MessageStatus.SENT);
         assertThat(messages).hasSize(1);
