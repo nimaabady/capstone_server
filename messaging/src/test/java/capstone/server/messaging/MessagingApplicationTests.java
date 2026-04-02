@@ -46,7 +46,7 @@ class MessagingApplicationTests {
         when(principal.getName()).thenReturn(senderId.toString());
 
         IncomingMessage incoming = new IncomingMessage(receiverId, "Hi!");
-        messageService.sendMessage(principal, incoming);
+        messageService.sendPrivateMessage(principal, incoming);
 
         // Verify WebSocket delivery: Spring's convertAndSendToUser prefixes the destination with "/user"
         // and appends the destination. Final path: /user/{receiverId}/queue/messages
