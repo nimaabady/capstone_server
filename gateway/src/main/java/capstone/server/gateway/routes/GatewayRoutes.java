@@ -6,12 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
+
 import java.net.URI;
 
+import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
 import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequestPredicates.path;
-import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
 
 @Configuration
 public class GatewayRoutes {
@@ -25,24 +26,10 @@ public class GatewayRoutes {
                 .before(uri(URI.create("http://localhost:8090")))
                 .build()
 
-//                .and(route("messaging_ws")
-//                        .route(path("/ws/**"), http())
-//                        .before(uri(URI.create("http://localhost:8091")))
-//                        .filter((request, next) -> {
-//                            log.info("========== WS HANDSHAKE START ==========");
-//                            log.info("Request Path: {}", request.path());
-//                            log.info("Incoming Headers from Android:");
-//                            request.headers().asHttpHeaders().forEach((name, values) ->
-//                                    log.info("  {}: {}", name, String.join(", ", values))
-//                            );
-//
-//                            ServerResponse response = next.handle(request);
-//
-//                            log.info("Response Status from Messaging: {}", response.statusCode());
-//                            log.info("========== WS HANDSHAKE END ===========");
-//                            return response;
-//                        })
-//                        .build())
+                .and(route("messaging")
+                        .route(path("/api/messaging/**"), http())
+                        .before(uri(URI.create("http://localhost:8091")))
+                        .build())
 
                 .and(route("friends")
                         .route(path("/api/friends/**"), http())

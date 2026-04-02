@@ -37,6 +37,11 @@ public class MessageController {
         messageService.acknowledge(principal, ack);
     }
 
+    @MessageMapping("/group.ack")
+    public void acknowledgeGroupMessage(MessageAck ack, Principal principal) {
+        messageService.acknowledgeGroup(principal, ack);
+    }
+
     @MessageMapping("/message.sync")
     public void syncMessages(Principal principal) {
         messageService.syncUndelivered(principal);

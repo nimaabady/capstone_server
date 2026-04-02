@@ -14,6 +14,9 @@ public interface MessageService {
 
     void acknowledge(Principal receiver, MessageAck ack);
 
+    void acknowledgeGroup(Principal receiver, MessageAck ack);
+
+
     void syncUndelivered(Principal principal);
 
     // History

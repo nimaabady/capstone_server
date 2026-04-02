@@ -63,6 +63,7 @@ public class MessageServiceImpl implements MessageService {
             throw new AccessDeniedException("You are not a member of this group");
         }
 
+        // create group message
         GroupChatMessage groupMsg = GroupChatMessage.builder()
                 .sender(senderId)
                 .groupId(incoming.groupId())
@@ -71,8 +72,17 @@ public class MessageServiceImpl implements MessageService {
                 .createdAt(Instant.now())
                 .build();
 
+        // save message to db
         GroupChatMessage savedMsg = groupChatMessageRepository.save(groupMsg);
 
+        // give ack to sender
+        messagingTemplate.convertAndSendToUser(
+                senderId.toString(),
+                "/queue/delivery",
+                new MessageAck(savedMsg.getId())
+        );
+
+        // send to room
         messagingTemplate.convertAndSend(
                 "/topic/room." + incoming.groupId(),
                 new OutgoingGroupMessage(savedMsg.getId(), incoming.groupId(), senderId, incoming.content(), savedMsg.getCreatedAt())
@@ -106,6 +116,28 @@ public class MessageServiceImpl implements MessageService {
                 new MessageAck(msg.getId())
         );
         log.info("Message {} acknowledged by {}", msg.getId(), receiverId);
+    }
+
+    @Override
+    public void acknowledgeGroup(Principal principal, MessageAck ack) {
+
+        GroupChatMessage msg = groupChatMessageRepository.findById(ack.messageId())
+                .orElseThrow(() -> {
+                    log.error("ACK FAILED: Message {} not found", ack.messageId());
+                    return new IllegalArgumentException("Message not found");
+                });
+
+        if (msg.getStatus() == GroupMessageStatus.DELIVERED) return;
+
+        msg.setStatus(GroupMessageStatus.DELIVERED);
+        groupChatMessageRepository.save(msg);
+
+        messagingTemplate.convertAndSendToUser(
+                msg.getSender().toString(),
+                "/queue/delivery",
+                new MessageAck(msg.getId())
+        );
+        log.info("Message {} acknowledged by {}", msg.getId(), msg.getSender());
     }
 
     @Override

@@ -37,10 +37,10 @@ public class SecurityConfig {
                         .authenticationEntryPoint(unauthorizedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                                .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
 //                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/api/auth/**", "/api/friends/**").authenticated()
-                        .anyRequest().authenticated()
+                                .requestMatchers("/api/auth/**", "/api/messaging/**" , "/api/friends/**").authenticated()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
