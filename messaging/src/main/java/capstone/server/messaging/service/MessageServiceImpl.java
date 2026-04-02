@@ -268,6 +268,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional
     public List<GroupMember> getAllUserGroups(UUID userId){
-        return groupMemberRepository.findByUserId(userId);
+        log.info("user {} is a member of these groups", userId);
+        List<GroupMember> groupList = groupMemberRepository.findByUserId(userId);
+        for (GroupMember g: groupList) {
+            log.info("Group {}", g.getGroup());
+        }
+        return groupList;
     }
 }
