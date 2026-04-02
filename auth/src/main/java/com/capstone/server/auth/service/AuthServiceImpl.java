@@ -9,11 +9,14 @@ import com.capstone.server.auth.jwt.service.JwtService;
 import com.capstone.server.auth.model.User;
 import com.capstone.server.auth.model.UserStatus;
 import com.capstone.server.auth.repository.AuthRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -44,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(dto.email())
                 .username(dto.username())
                 .hashedPassword(hashedPassword)
-                .status(UserStatus.Offline)
+                .status(UserStatus.OFFLINE)
                 .build();
 
         User saved = _authRepository.save(user);
@@ -72,13 +75,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (_passwordEncoder.matches(dto.password(), user.getHashedPassword())) {
 
-            user.setStatus(UserStatus.Online);
             _authRepository.save(user);
 
             String token = _jwtService.generateToken(user.getId());
 
             return new LoginResponseDto(
-                    user.getId(),
                     token,
                     user.getEmail(),
                     user.getUsername(),
@@ -88,6 +89,23 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new AuthenticationException("Invalid credentials.");
         }
+    }
+
+    @Override
+    @Transactional
+    public UpdateUserStatusDto updateStatus(UpdateUserStatusDto dto, UUID id) {
+        User user = _authRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (user.getStatus() == dto.status()) {
+            return dto;
+        }
+
+        user.setStatus(dto.status());
+        _authRepository.save(user);
+
+        log.info("User {} status updated to {}", id, dto.status());
+        return dto;
     }
 
     @Override
@@ -145,7 +163,7 @@ public class AuthServiceImpl implements AuthService {
         User user = _authRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User doesn't exist."));
 
-        user.setStatus(UserStatus.Offline);
+        user.setStatus(UserStatus.OFFLINE);
         _authRepository.save(user);
     }
 

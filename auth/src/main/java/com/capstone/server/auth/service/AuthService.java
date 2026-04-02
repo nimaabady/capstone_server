@@ -10,6 +10,8 @@ public interface AuthService {
 
    LoginResponseDto loginUser(LoginRequestDto dto);
 
+   UpdateUserStatusDto updateStatus(UpdateUserStatusDto dto, UUID id);
+
    UserResponseDto getUserById(UUID id);
 
    UserIdResponseDto getUserIdByUsername(String username);
