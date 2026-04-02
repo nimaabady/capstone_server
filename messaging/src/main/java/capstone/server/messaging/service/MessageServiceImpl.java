@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
@@ -262,5 +263,11 @@ public class MessageServiceImpl implements MessageService {
         groupChatMessageRepository.deleteByGroupId(groupId);
         groupChatRepository.deleteGroupChatById(groupId);
         log.info("Group {} and all its messages successfully deleted", groupId);
+    }
+
+    @Override
+    @Transactional
+    public List<GroupMember> getAllUserGroups(UUID userId){
+        return groupMemberRepository.findByUserId(userId);
     }
 }

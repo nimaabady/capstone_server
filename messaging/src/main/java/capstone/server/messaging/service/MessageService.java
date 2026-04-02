@@ -1,6 +1,7 @@
 package capstone.server.messaging.service;
 
 import capstone.server.messaging.dto.*;
+import capstone.server.messaging.model.GroupMember;
 
 import java.security.Principal;
 import java.util.List;
@@ -32,4 +33,6 @@ public interface MessageService {
     void leaveGroup(Principal principal, UUID groupId);
 
     void deleteGroup(Principal admin, UUID groupId);
+
+    List<GroupMember> getAllUserGroups(UUID userId);
 }
