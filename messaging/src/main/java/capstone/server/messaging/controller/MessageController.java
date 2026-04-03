@@ -1,6 +1,7 @@
 package capstone.server.messaging.controller;
 
 import capstone.server.messaging.dto.*;
+import capstone.server.messaging.model.GroupMember;
 import capstone.server.messaging.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -59,9 +60,14 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getGroupHistory(principal, groupId));
     }
 
+    @GetMapping("/groups/{userId}")
+    public ResponseEntity<List<GroupMember>> getAllUserGroups(@PathVariable UUID userId) {
+        return ResponseEntity.ok(messageService.getAllUserGroups(userId));
+    }
+
     @PostMapping("/groups")
-    public ResponseEntity<Void> createGroup(Principal principal, @RequestParam String name) {
-        messageService.createGroup(principal, name);
+    public ResponseEntity<Void> createGroup(Principal principal, @RequestBody CreateGroupRequestDto dto) {
+        messageService.createGroup(principal, dto.name());
         return ResponseEntity.ok().build();
     }
 

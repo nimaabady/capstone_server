@@ -5,8 +5,8 @@ import java.util.UUID;
 
 public record OutgoingGroupMessage(
         UUID messageId,
-        UUID groupId,
         UUID senderId,
+        UUID groupId,
         String content,
         Instant timestamp
 ) {}
