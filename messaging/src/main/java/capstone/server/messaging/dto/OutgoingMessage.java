@@ -5,7 +5,8 @@ import java.util.UUID;
 
 public record OutgoingMessage(
         UUID messageId,
-        UUID sender,
+        UUID senderId,
+        UUID receiverId,
         String content,
         Instant timestamp
 ) {

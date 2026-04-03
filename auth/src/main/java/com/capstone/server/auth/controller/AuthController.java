@@ -61,6 +61,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.changeEmail(dto, getUserId()));
     }
 
+    @PutMapping("/status")
+    public ResponseEntity<UpdateUserStatusDto> updateStatus(@Valid @RequestBody UpdateUserStatusDto dto) {
+
+        return ResponseEntity.ok(authService.updateStatus(dto, getUserId()));
+    }
+
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(authService.getUserById(id));
