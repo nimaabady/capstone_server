@@ -156,12 +156,6 @@ public class MessageServiceImpl implements MessageService {
 
         msg.setStatus(GroupMessageStatus.DELIVERED);
         groupChatMessageRepository.save(msg);
-
-        messagingTemplate.convertAndSendToUser(
-                msg.getSender().toString(),
-                "/queue/delivery",
-                new MessageAck(msg.getId())
-        );
         log.info("Message {} acknowledged by {}", msg.getId(), msg.getSender());
     }
 
