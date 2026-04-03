@@ -66,8 +66,8 @@ public class MessageController {
     }
 
     @PostMapping("/groups")
-    public ResponseEntity<Void> createGroup(Principal principal, @RequestParam String name) {
-        messageService.createGroup(principal, name);
+    public ResponseEntity<Void> createGroup(Principal principal, @RequestBody CreateGroupRequestDto dto) {
+        messageService.createGroup(principal, dto.name());
         return ResponseEntity.ok().build();
     }
 
