@@ -18,7 +18,6 @@ import java.util.UUID;
 public class GroupChatMessage {
 
     @Id
-    @GeneratedValue
     @Column(nullable = false, updatable = false)
     private UUID id;
 
