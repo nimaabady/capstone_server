@@ -7,4 +7,7 @@ rootProject.name = "server"
 
 // Lhekdup added this
 include(":auth")
+include(":friends")
+include(":messaging")
+include(":gateway")
 include("calling")
