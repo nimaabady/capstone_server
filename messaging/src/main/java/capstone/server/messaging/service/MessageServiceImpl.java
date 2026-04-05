@@ -14,7 +14,6 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
@@ -177,6 +176,22 @@ public class MessageServiceImpl implements MessageService {
             );
         }
         log.info("Sync complete. Sent {} pending messages to {}", undeliveredMsg.size(), receiverId);
+    }
+
+    @Override
+    public List<OutgoingMessage> getPrivateHistory(Principal principal, UUID otherUserId) {
+        UUID currentUserId = UUID.fromString(principal.getName());
+        log.debug("Fetching private chat history between {} and {}", currentUserId, otherUserId);
+
+        return messageRepository.findChatHistory(currentUserId, otherUserId)
+                .stream()
+                .map(m -> new OutgoingMessage(
+                        m.getId(), m.getSender(),
+                        m.getReceiver(),
+                        m.getContent(),
+                        m.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
