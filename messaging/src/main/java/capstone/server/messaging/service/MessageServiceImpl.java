@@ -14,7 +14,6 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
@@ -33,6 +32,7 @@ public class MessageServiceImpl implements MessageService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
+    @Transactional
     public void sendPrivateMessage(Principal principal, IncomingMessage incoming) {
         // Check if this message is already processed by server
         if (messageRepository.existsById(incoming.messageId())) {
@@ -53,7 +53,7 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         try {
-            Message savedMsg = messageRepository.saveAndFlush(msg);
+            Message savedMsg = messageRepository.save(msg);
 
             messagingTemplate.convertAndSendToUser(
                     incoming.receiver().toString(),
@@ -93,13 +93,6 @@ public class MessageServiceImpl implements MessageService {
 
         // save message to db
         GroupChatMessage savedMsg = groupChatMessageRepository.save(groupMsg);
-
-        // give ack to sender
-        messagingTemplate.convertAndSendToUser(
-                senderId.toString(),
-                "/queue/delivery",
-                new MessageAck(savedMsg.getId())
-        );
 
         // send to room
         messagingTemplate.convertAndSend(
@@ -225,11 +218,16 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public void createGroup(Principal principal, String groupName) {
+    public CreateGroupRequestDto createGroup(Principal principal, CreateGroupRequestDto dto) {
         UUID creatorId = UUID.fromString(principal.getName());
-        log.info("Creating Group: '{}' by User {}", groupName, creatorId);
+        log.info("Creating Group: '{}' by User {}", dto.name(), creatorId);
 
-        GroupChat group = GroupChat.builder().name(groupName).createdAt(Instant.now()).build();
+        GroupChat group = GroupChat.builder()
+                .id(dto.groupId())
+                .name(dto.name())
+                .createdAt(Instant.now())
+                .build();
+
         GroupChat savedGroup = groupChatRepository.save(group);
 
         GroupMember admin = GroupMember.builder()
@@ -240,25 +238,24 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         groupMemberRepository.save(admin);
-        log.info("Group '{}' successfully created with ID: {}", groupName, savedGroup.getId());
+        log.info("Group '{}' successfully created with ID: {}", dto.name(), savedGroup.getId());
+        log.info("User {} is the admin", creatorId);
+        return new CreateGroupRequestDto(dto.groupId(), dto.name());
     }
 
     @Override
     @Transactional
-    public void addUserToGroup(Principal adminPrincipal, UUID groupId, UUID userIdToAdd) {
-        UUID adminId = UUID.fromString(adminPrincipal.getName());
-        log.info("Admin {} adding User {} to Group {}", adminId, userIdToAdd, groupId);
+    public void addUserToGroup(Principal groupMember, UUID groupId, UUID userToAdd) {
+        UUID userId = UUID.fromString(groupMember.getName());
+        log.info("User {} adding User {} to Group {}", userId, userToAdd, groupId);
 
-        groupMemberRepository.findByGroupId(groupId).stream()
-                .filter(m -> m.getUserId().equals(adminId) && m.getRole() == GroupMemberRole.ADMIN)
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.warn("ADMIN DENIED: User {} attempted to add member to Group {} without Admin role", adminId, groupId);
-                    return new AccessDeniedException("Only admins can add members");
-                });
+        if (!groupMemberRepository.existsByGroupIdAndUserId(groupId, userId)) {
+            log.warn("Access Denied: User {} is not in group {}", userId, groupId);
+            throw new AccessDeniedException("You must be a member to add others");
+        }
 
-        if (groupMemberRepository.existsByGroupIdAndUserId(groupId, userIdToAdd)) {
-            log.debug("User {} is already in Group {}", userIdToAdd, groupId);
+        if (groupMemberRepository.existsByGroupIdAndUserId(groupId, userToAdd)) {
+            log.debug("User {} is already in Group {}", userToAdd, groupId);
             return;
         }
 
@@ -267,13 +264,13 @@ public class MessageServiceImpl implements MessageService {
 
         GroupMember newMember = GroupMember.builder()
                 .group(group)
-                .userId(userIdToAdd)
+                .userId(userToAdd)
                 .role(GroupMemberRole.MEMBER)
                 .joinedAt(Instant.now())
                 .build();
 
         groupMemberRepository.save(newMember);
-        log.info("User {} successfully added to Group {}", userIdToAdd, groupId);
+        log.info("User {} successfully added to Group {} by {}", userToAdd, groupId, userId);
     }
 
     @Override
@@ -302,12 +299,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public List<GroupMember> getAllUserGroups(UUID userId){
-        log.info("user {} is a member of these groups", userId);
-        List<GroupMember> groupList = groupMemberRepository.findByUserId(userId);
-        for (GroupMember g: groupList) {
-            log.info("Group {}", g.getGroup());
-        }
-        return groupList;
+    public List<GroupInfoDto> getAllUserGroups(UUID userId) {
+        log.info("Fetching group info for user {}", userId);
+        // Directly returns the record list from the repo
+        return groupMemberRepository.findGroupsByUserId(userId);
     }
 }
