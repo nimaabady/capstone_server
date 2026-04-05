@@ -10,7 +10,6 @@ WORKDIR /app
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle.kts settings.gradle.kts ./
-COPY libs libs
 
 # Fix permissions and line endings for gradlew
 RUN chmod +x gradlew && \
