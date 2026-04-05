@@ -21,12 +21,10 @@ public interface MessageService {
     void syncUndelivered(Principal principal);
 
     // History
-    List<OutgoingMessage> getPrivateHistory(Principal principal, UUID receiverId);
-
     List<OutgoingGroupMessage> getGroupHistory(Principal principal, UUID groupId);
 
     // Group Management
-    void createGroup(Principal principal, String groupName);
+    CreateGroupRequestDto createGroup(Principal principal, CreateGroupRequestDto dto);
 
     void addUserToGroup(Principal admin, UUID groupId, UUID userIdToAdd);
 
@@ -34,5 +32,5 @@ public interface MessageService {
 
     void deleteGroup(Principal admin, UUID groupId);
 
-    List<GroupMember> getAllUserGroups(UUID userId);
+    List<GroupInfoDto> getAllUserGroups(UUID userId);
 }
