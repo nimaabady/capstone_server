@@ -1,10 +1,9 @@
 package capstone.server.messaging.dto;
 
-
 import java.util.UUID;
 
-public record CreateGroupRequestDto(
+public record GroupInfoDto (
         UUID groupId,
-        String name
+        String groupName
 ) {
 }

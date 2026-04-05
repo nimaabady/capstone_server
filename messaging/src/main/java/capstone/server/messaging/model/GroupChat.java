@@ -19,7 +19,6 @@ import java.util.UUID;
 public class GroupChat {
 
     @Id
-    @GeneratedValue
     @Column(nullable = false, updatable = false)
     private UUID id;
 
