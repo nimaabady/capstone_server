@@ -20,6 +20,8 @@ public interface MessageService {
 
     void syncUndelivered(Principal principal);
 
+    List<OutgoingMessage> getPrivateHistory(Principal principal, UUID otherUserId);
+
     // History
     List<OutgoingGroupMessage> getGroupHistory(Principal principal, UUID groupId);
 

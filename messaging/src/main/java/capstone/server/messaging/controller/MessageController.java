@@ -49,6 +49,11 @@ public class MessageController {
 
     // REST API Routes (Group Management & History)
 
+    @GetMapping("/history/private/{userId}")
+    public ResponseEntity<List<OutgoingMessage>> getPrivateHistory(Principal principal, @PathVariable UUID userId) {
+        return ResponseEntity.ok(messageService.getPrivateHistory(principal, userId));
+    }
+
     @GetMapping("/history/group/{groupId}")
     public ResponseEntity<List<OutgoingGroupMessage>> getGroupHistory(Principal principal, @PathVariable UUID groupId) {
         return ResponseEntity.ok(messageService.getGroupHistory(principal, groupId));
