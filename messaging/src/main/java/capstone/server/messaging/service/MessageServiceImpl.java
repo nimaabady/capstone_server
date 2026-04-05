@@ -33,6 +33,7 @@ public class MessageServiceImpl implements MessageService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
+    @Transactional
     public void sendPrivateMessage(Principal principal, IncomingMessage incoming) {
         // Check if this message is already processed by server
         if (messageRepository.existsById(incoming.messageId())) {
@@ -53,7 +54,7 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         try {
-            Message savedMsg = messageRepository.saveAndFlush(msg);
+            Message savedMsg = messageRepository.save(msg);
 
             messagingTemplate.convertAndSendToUser(
                     incoming.receiver().toString(),
