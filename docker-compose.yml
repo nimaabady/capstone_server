@@ -70,6 +70,34 @@ services:
     networks:
       - spring
 
+  calling:
+    build: ./calling
+    container_name: calling
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+      SPRING_DATASOURCE_USERNAME: postgres.rhynvergxcgxfpcakenn
+      SPRING_DATASOURCE_PASSWORD: BOCUQN7Vtoxbwpk4
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 3
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
+
+      JWT_SECRET: 2502db48edbfbe54b02d318f50e4e4cb
+      JWT_EXPIRATION: 12345678
+    ports:
+      - "8093:8093"
+    networks:
+      - spring
+
+
+
+#  pgadmin:
+#    image: dpage/pgadmin4:9.9
+#    ports:
+#      - "8888:80"
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: user@domain.ca
+#      PGADMIN_DEFAULT_PASSWORD: password
+#    networks:
+#      - spring
 
 #  rabbitmq:
 #    image: 'rabbitmq:latest'

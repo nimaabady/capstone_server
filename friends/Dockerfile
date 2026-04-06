@@ -11,6 +11,7 @@ COPY gradlew .
 COPY gradle gradle
 COPY build.gradle.kts settings.gradle.kts ./
 
+
 # Fix permissions and line endings for gradlew
 RUN chmod +x gradlew && \
     sed -i 's/\r$//' gradlew

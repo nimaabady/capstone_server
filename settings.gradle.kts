@@ -5,8 +5,9 @@ pluginManagement {
 }
 rootProject.name = "server"
 
+// Lhekdup added this
 include(":auth")
-include(":security")
-include(":messaging")
 include(":friends")
+include(":messaging")
 include(":gateway")
+include("calling")
